@@ -1,0 +1,9 @@
+.shelf {
+  width: 70%;
+  display: inline-block;
+  margin-left: 50px;
+  margin-top: 50px;
+}
+.my-modal {
+  width: 50%;
+}

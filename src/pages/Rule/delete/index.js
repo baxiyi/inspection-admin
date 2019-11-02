@@ -2,7 +2,7 @@ import React from 'react'
 export default function() {
   return (
     <div>
-      about
+      rule/delete
     </div>
   )
 }
