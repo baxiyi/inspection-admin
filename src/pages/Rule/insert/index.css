@@ -1,18 +1,24 @@
-.history {
+.rule-insert {
   width: 70%;
   display: inline-block;
   margin-left: 50px;
   margin-top: 50px;
 }
-.level-1 {
-  background-color:	#FF8C00;
+.id-input {
+  margin-bottom: 30px;
 }
-.level-2 {
-  background-color:	#FFB90F;
+.rule-infor {
+  vertical-align: top;
 }
-.level-3 {
-  background-color:	#FFDEAD;
+textarea.ant-input {
+  vertical-align: top;
 }
-.unable {
-  color: #CFCFCF;
+.rule-table {
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+.save-button {
+  width: 100px;
+  margin: auto;
+  margin-top: 30px;
 }

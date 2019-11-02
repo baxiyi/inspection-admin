@@ -1,9 +1,15 @@
-.shelf {
-  width: 70%;
+.shelf-insert {
   display: inline-block;
+  width: 70%;
   margin-left: 50px;
   margin-top: 50px;
 }
-.my-modal {
-  width: 50%;
+.steps-action {
+  margin-top: 50px;
+}
+.my-table {
+  margin-top: 50px;
+}
+.uneditable-link {
+  color: 	#778899
 }
