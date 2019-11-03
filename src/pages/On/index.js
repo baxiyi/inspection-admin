@@ -13,15 +13,9 @@ export default class extends PureComponent {
     }
   }
 
-  open(id,onoff){
-    // if(onoff=="已启用")
-     
-  }
-
-  close(){
+  openOrClose(status) {
 
   }
-
   render() {
     const columns = [
       {
@@ -54,11 +48,7 @@ export default class extends PureComponent {
         dataIndex: 'openclose',
         key: 'openclose',
         render: (value, record) => (
-          <span>
-            <a onClick={id => this.open(record.id,record.onoff) }>启用</a>
-            <Divider type="vertical" />
-            <a onClick={id => this.close(record.id,record.onoff) }>停用</a>
-          </span>
+          <a onClick={() => this.openOrClose(record.onoff)}>{record.onoff == '已启用' ? '停用' : '启用'}</a>
         ),      
       }
     ];
