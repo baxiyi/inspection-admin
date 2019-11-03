@@ -1,0 +1,12 @@
+.system {
+  width: 70%;
+  display: inline-block;
+  margin-left: 50px;
+  margin-top: 50px;
+}
+.close-system {
+  margin-right: 50px;
+}
+.open-system {
+  margin-right: 50px;
+}

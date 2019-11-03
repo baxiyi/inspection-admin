@@ -3,9 +3,8 @@ import Shelf1 from '../pages/Shelf/insert'
 import Shelf2 from '../pages/Shelf/delete'
 import Rule1 from '../pages/Rule/insert'
 import Rule2 from '../pages/Rule/delete'
-import Backup1 from '../pages/Backup/backup'
-import Backup2 from '../pages/Backup/deleteimg'
-import Backup3 from '../pages/Backup/deletelog'
+import Backup1 from '../pages/Backup/deleteimg'
+import Backup2 from '../pages/Backup/deletelog'
 import On from '../pages/On'
 import System from '../pages/System'
 import Menu from '../components/Menu'
@@ -37,16 +36,12 @@ const App = () => (
           component={Rule2}
         />
         <Route 
-          path='/backup/backup'
+          path='/backup/deleteimg'
           component={Backup1}
         />
         <Route 
-          path='/backup/deleteimg'
-          component={Backup2}
-        />
-        <Route 
           path='/backup/deletelog'
-          component={Backup3}
+          component={Backup2}
         />
         <Route 
           path='/on'

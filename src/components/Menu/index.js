@@ -14,11 +14,10 @@ class MenuComp extends PureComponent {
       '/shelf/delete': '2',
       '/rule/insert': '3',
       '/rule/delete': '4',
-      '/backup/backup': '5',
-      '/backup/deletelog': '6',
-      '/backup/deleteimg': '7',
-      '/on': '8',
-      '/system': '9',
+      '/backup/deletelog': '5',
+      '/backup/deleteimg': '6',
+      '/on': '7',
+      '/system': '8',
     };
     const curPath = this.props.location.pathname;
     let openKeys = [];
@@ -76,24 +75,20 @@ class MenuComp extends PureComponent {
           }>
 
           <Menu.Item key='5'>
-          <Link to="/backup/backup">备份</Link>
-          </Menu.Item>
-
-          <Menu.Item key='6'>
           <Link to="/backup/deletelog">删除/导出系统日志</Link>
           </Menu.Item>
 
-          <Menu.Item key='7'>
+          <Menu.Item key='6'>
           <Link to="/backup/deleteimg">删除/导出采集图像</Link>
           </Menu.Item>
 
         </SubMenu>
 
-        <Menu.Item key='8'>
+        <Menu.Item key='7'>
           <Link to="/on">启用/停用</Link>
         </Menu.Item>
 
-        <Menu.Item key='9'>
+        <Menu.Item key='8'>
           <Link to="/system">系统信息</Link>
         </Menu.Item>
 

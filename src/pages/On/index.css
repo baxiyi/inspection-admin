@@ -1,0 +1,19 @@
+.system{
+  margin-top: 50px;
+  margin-left: 50px;
+  width: 70%;
+  display: inline-block;
+}
+.exactquery{
+  width: 30%;
+  display: inline-block;
+  margin-left: 40px;
+}
+.fuzzyquery{
+  width: 30%;
+  display: inline-block;
+  margin-left: 360px;
+}
+.system-table{
+  margin-top: 50px;
+}
