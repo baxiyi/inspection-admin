@@ -1,9 +1,12 @@
-.shelf-delete {
+.rule-stop {
   display: inline-block;
   margin-left: 50px;
   margin-top: 50px;
   width: 70%; 
 }
-.shelf-delete-table {
+.rule-search-input {
+  margin-right: 50px;
+}
+.rule-table {
   margin-top: 50px;
 }

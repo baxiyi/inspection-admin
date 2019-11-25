@@ -18,7 +18,7 @@ export default class extends PureComponent {
     this.setState({
       ruleId: value,
     }, () => this.updateRuleList)
-  } 
+  }
 
   searchByServiceId(value) {
     console.log('search device id '+ value)
@@ -76,7 +76,7 @@ export default class extends PureComponent {
       {key: '1', }
     ];
     return (
-      <div className="rule-delete">
+      <div className="rule-stop">
         规则ID：
         <Search 
           placeholder="请输入规则ID"

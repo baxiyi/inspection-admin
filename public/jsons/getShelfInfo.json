@@ -1,0 +1,13 @@
+{
+    "error_code": 0,
+    "data": {
+      "pageData": {
+        "shelfId": "1",
+        "shelfName": "屏柜1",
+        "positionX": 1,
+        "positionY": 2 ,
+        "ipAddress": "1.1.1.1",
+        "status": "已启用"
+      }
+    }
+  }

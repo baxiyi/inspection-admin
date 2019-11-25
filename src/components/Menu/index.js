@@ -10,25 +10,21 @@ class MenuComp extends PureComponent {
 
   render() {
     const map = {
-      '/shelf/insert': '1',
-      '/shelf/delete': '2',
-      '/rule/insert': '3',
-      '/rule/delete': '4',
-      '/backup/deletelog': '5',
-      '/backup/deleteimg': '6',
-      '/on': '7',
-      '/system': '8',
+      '/shelf': '1',
+      '/rule/insert': '2',
+      '/rule/stop': '3',
+      '/backup/log': '4',
+      '/backup/img': '5',
+      '/on': '6',
+      '/system': '7',
     };
     const curPath = this.props.location.pathname;
     let openKeys = [];
-    if (curPath.indexOf('/shelf') !== -1) {
+    if (curPath.indexOf('/rule') !== -1) {
       openKeys.push('sub1');
     }
-    if (curPath.indexOf('/rule') !== -1) {
-      openKeys.push('sub2');
-    }
     if (curPath.indexOf('/backup') !== -1) {
-      openKeys.push('sub3');
+      openKeys.push('sub2');
     }
     return (
       <Menu
@@ -39,56 +35,45 @@ class MenuComp extends PureComponent {
         className="menu"
       >
 
+        <Menu.Item key="1">
+          <Link to="/shelf">启用/停用屏柜</Link>
+        </Menu.Item>
+
         <SubMenu key='sub1'           
             title={          
-              <span>更新屏柜</span>
+              <span>更新规则</span>
           }>
-
-          <Menu.Item key='1'>
-          <Link to="/shelf/insert">录入屏柜-向导式</Link>
+          
+          <Menu.Item key='2'>
+          <Link to="/rule/insert">录入规则页</Link>
           </Menu.Item>
 
-          <Menu.Item key='2'>
-          <Link to="/shelf/delete">删除屏柜</Link>
+          <Menu.Item key='3'>
+          <Link to="/rule/stop">停用规则页</Link>
           </Menu.Item>
 
         </SubMenu>
 
         <SubMenu key='sub2'           
             title={          
-              <span>更新规则</span>
-          }>
-          
-          <Menu.Item key='3'>
-          <Link to="/rule/insert">录入规则页</Link>
-          </Menu.Item>
-
-          <Menu.Item key='4'>
-          <Link to="/rule/delete">停用规则页</Link>
-          </Menu.Item>
-
-        </SubMenu>
-
-        <SubMenu key='sub3'           
-            title={          
               <span>备份与删除</span>
           }>
 
-          <Menu.Item key='5'>
-          <Link to="/backup/deletelog">删除/导出系统日志</Link>
+          <Menu.Item key='4'>
+          <Link to="/backup/log">删除/导出系统日志</Link>
           </Menu.Item>
 
-          <Menu.Item key='6'>
-          <Link to="/backup/deleteimg">删除/导出采集图像</Link>
+          <Menu.Item key='5'>
+          <Link to="/backup/img">删除/导出采集图像</Link>
           </Menu.Item>
 
         </SubMenu>
 
-        <Menu.Item key='7'>
-          <Link to="/on">启用/停用</Link>
+        <Menu.Item key='6'>
+          <Link to="/on">启用/停用设备单元</Link>
         </Menu.Item>
 
-        <Menu.Item key='8'>
+        <Menu.Item key='7'>
           <Link to="/system">系统信息</Link>
         </Menu.Item>
 
