@@ -1,8 +1,19 @@
 import React, {PureComponent} from 'react'
 import {Icon} from 'antd'
+import {withRouter} from 'react-router-dom'
 import './index.css'
 
-export default class extends PureComponent {
+class TopBar extends PureComponent {
+
+  logout() {
+    const storage = window.sessionStorage;
+    storage.setItem('isLogin', 'false');
+    storage.setItem('userId', '');
+    storage.setItem('userName', '');
+    this.props.history.push('/login');
+    window.location.reload();
+  }
+
   render() {
     const storage = window.sessionStorage;
     let userName = '';
@@ -26,3 +37,5 @@ export default class extends PureComponent {
     )
   }
 }
+
+export default withRouter(TopBar);

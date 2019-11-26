@@ -103,12 +103,24 @@ export default class extends React.Component {
         relation: item.relationType,
       }
     });
+    if (ruleId.trim().length === 0) {
+      message.info('规则ID不能为空');
+      return;
+    }
+    if (warningInfor.trim().length === 0) {
+      message.info('告警信息不能为空');
+      return;
+    }
+    if (warningItems.length === 0) {
+      message.info('告警项不能为空');
+      return;
+    }
     fetch(`${HOST}/insertRule`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: `ruleId=${ruleId}&warningInfo=${warningInfor}&importance=${importance}&warningItems=${warningItems}`
+      body: `ruleId=${ruleId}&warningInfo=${warningInfor}&importance=${importance}&warningItems=${warningItems}&userId=${window.sessionStorage.userId}`
     }).then(response => response.json())
     .then(response => {
       if (response.data.pageData.success == 'yes') {

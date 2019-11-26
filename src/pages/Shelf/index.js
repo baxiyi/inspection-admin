@@ -37,7 +37,7 @@ export default class extends PureComponent {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `shelfId=${shelfInfo[0].shelfId}&type=0`,
+        body: `shelfId=${shelfInfo[0].shelfId}&type=0&userId=${window.sessionStorage.userId}`,
       }).then(response => response.json())
       .then(response => {
         if (response.data.success == 'yes') {
@@ -53,7 +53,7 @@ export default class extends PureComponent {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `shelfId=${shelfInfo[0].shelfId}&type=1`,
+        body: `shelfId=${shelfInfo[0].shelfId}&type=1&userId=${window.sessionStorage.userId}`,
       }).then(response => response.json())
       .then(response => {
         if (response.data.pageData.success == 'yes') {

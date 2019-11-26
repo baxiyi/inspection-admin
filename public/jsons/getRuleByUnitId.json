@@ -1,0 +1,18 @@
+{
+  "error_code": 0,
+  "data": {
+    "pageData": [
+        {
+          "ruleId": 1,
+          "warningInfo": "警告信息1",
+          "devices": [
+              {
+                  "devId": 1,
+                  "devName" : "设备名称1"
+              }
+          ],
+          "status": "已启用"
+      }
+    ]
+  }
+}

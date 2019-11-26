@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react'
-import {Input, Table} from 'antd'
+import {Input, Table, message} from 'antd'
+import {HOST} from '../../../config';
 import './index.css'
 
 const {Search} = Input;
@@ -8,35 +9,88 @@ export default class extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      ruleId: '',
-      deviceId: '',
+      tableData: [],
     }
   }
 
-  searchByRuleId(value) {
-    console.log('search rule id ' + value)
-    this.setState({
-      ruleId: value,
-    }, () => this.updateRuleList)
+  searchByRuleId(ruleId) {
+    fetch(`${HOST}/getRuleByRuleId.json?ruleId=${ruleId}`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      const {pageData} = response.data;
+      let tableData = [];
+      tableData.push(pageData);
+      this.setState({
+        tableData,
+      })
+    })
   }
 
-  searchByServiceId(value) {
-    console.log('search device id '+ value)
-    this.setState({
-      deviceId: value,
-    }, () => this.updateRuleList())
+  searchByUnitId(unitId) {
+    fetch(`${HOST}/getRuleByUnitId.json?unitId=${unitId}`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      const {pageData} = response.data;
+      this.setState({
+        tableData: pageData,
+      })
+    })
   }
 
-  updateRuleList() {
-    console.log('update rule list')
+  startOrStopRule(status, ruleId) {
+    if (status == '已启用') {
+      fetch(`${HOST}/startOrStopRule.json`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `ruleId=${ruleId}&type=0&userId=${window.sessionStorage.userId}`
+      }).then(response => response.json())
+      .then(response => {
+        if (response.data.pageData.success == 'yes') {
+          message.success('停用规则成功');
+          window.location.reload()
+        } else {
+          message.error(response.data.pageData.message);
+        }
+      })
+    } else {
+      fetch(`${HOST}/startOrStopRule`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `ruleId=${ruleId}&type=1&userId=${window.sessionStorage.userId}`
+      }).then(response => response.json())
+      .then(response => {
+        if (response.data.pageData.success == 'yes') {
+          message.success('启用规则成功');
+          window.location.reload()
+        } else {
+          message.error(response.data.pageData.message);
+        }
+      })
+    }
   }
 
-  onOrStop(status) {
-    console.log(status);
-  }
-
-  deleteRule(id) {
-    console.log('delete rule ' + id);
+  deleteRule(ruleId) {
+    fetch(`${HOST}/deleteRule`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `ruleId=${ruleId}&userId=${window.sessionStorage.userId}`
+    }).then(response => response.json())
+    .then(response => {
+      if (response.data.pageData.success == 'yes') {
+        message.success('删除规则成功');
+        window.location.reload()
+      } else {
+        message.error(response.data.pageData.message);
+      }
+    })
   }
 
   render() {
@@ -47,11 +101,20 @@ export default class extends PureComponent {
       },
       {
         title: '警告信息',
-        dataIndex: 'warningInfor',
+        dataIndex: 'warningInfo',
       },
       {
         title: '关联的设备',
         dataIndex: 'devices',
+        render: (arr, record) => {
+          let res = '';
+          for (let dev in arr) {
+            res = res + dev + ',';
+          }
+          const len = res.length;
+          res = res.slice(0, len - 1);
+          return res;
+        }
       },
       {
         title: '状态',
@@ -61,7 +124,7 @@ export default class extends PureComponent {
         title: '',
         dataIndex: 'onOrStop',
         render: (value, record) => (
-          <a onClick={this.onOrStop(record.status)}>
+          <a onClick={() => this.startOrStopRule(record.status, record.ruleId)}>
             {record.status == '已启用' ? '停用' : '启用'}
           </a>
         )
@@ -72,9 +135,7 @@ export default class extends PureComponent {
         render: (value, record) => (<a onClick={() => this.deleteRule(record.ruleId)}>删除</a>)
       }
     ];
-    const tableData = [
-      {key: '1', }
-    ];
+    const {tableData} = this.state;
     return (
       <div className="rule-stop">
         规则ID：
@@ -88,7 +149,7 @@ export default class extends PureComponent {
         <Search 
           placeholder="请输入设备ID"
           style={{width: 200}}
-          onSearch={(value) => this.searchByServiceId(value)}
+          onSearch={(value) => this.searchByUnitId(value)}
         />
         <Table 
           columns={columns}
