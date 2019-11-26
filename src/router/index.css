@@ -3,3 +3,6 @@
   left: 20px;
   top: 20px;
 }
+.ant-table {
+  font-size: 16px !important;
+}

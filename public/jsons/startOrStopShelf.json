@@ -1,7 +1,9 @@
 {
   "error_code": 0,
   "data": {
-    "success": "yes",
-    "message": "启用成功"
+    "pageData": {
+      "success": "yes",
+      "message": "启用成功"
+    }
   }
 }
