@@ -1,19 +1,23 @@
-.system{
+.on {
   margin-top: 50px;
   margin-left: 50px;
   width: 70%;
   display: inline-block;
 }
-.exactquery{
-  width: 30%;
+.dev-query {
+  width: 20%;
   display: inline-block;
-  margin-left: 40px;
 }
-.fuzzyquery{
-  width: 30%;
+.shelf-query {
+  width: 20%;
   display: inline-block;
-  margin-left: 360px;
+  margin-left: 100px;
 }
-.system-table{
+.category-query {
+  width: 20%;
+  display: inline-block;
+  margin-left: 100px;
+}
+.unit-table{
   margin-top: 50px;
 }

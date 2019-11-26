@@ -1,0 +1,20 @@
+{
+  "error_code": 0,
+  "data": {
+    "pageData": [
+      {
+          "unitId": 1,
+            "meaning": "含义1",
+            "category": "类别1",
+            "warningItems": [
+              {
+                   "unitId1":1,
+                   "unitId2": 2,
+                   "relation": "EQUAL"
+              }
+            ],
+           "isOn": 0
+      }
+    ]
+  }
+}
