@@ -1,6 +1,8 @@
 import React, {PureComponent} from 'react'
 import {Table, DatePicker, TimePicker, Button, message, Input} from 'antd'
 import moment from 'moment';
+import {HOST} from '../../../config';
+import ExportJsonExcel from 'js-export-excel';
 import './index.css'
 
 const {Search} = Input;
@@ -12,7 +14,52 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
+      pageOffset: 0,
+      totalPages: 0,
+      tableData: [],
     }
+  }
+
+  componentDidMount() {
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    fetch(`${HOST}/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}
+    &endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
+    .then(response => response.json())
+    .then(response => {
+      const {totalPages} = response.data;
+      console.log(totalPages)
+      const {pageData} = response.data;
+      const tableData = pageData.map((item, index) => {
+        return {
+          logId: item.logId,
+          seq: index + 1,
+          date: item.logTime,
+          handleDetail: item.content,
+          user: item.usrByUsrId.usrName,
+        }
+      });
+      this.setState({
+        tableData,
+        totalPages,
+      })
+    })
+  }
+
+  formatDate (date, fmt) {
+    var o = {
+        "M+": date.getMonth() + 1, //月份 
+        "d+": date.getDate(), //日 
+        "h+": date.getHours(), //小时 
+        "m+": date.getMinutes(), //分 
+        "s+": date.getSeconds(), //秒 
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+        "S": date.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
   }
 
   getOneHourBefore() {
@@ -38,21 +85,86 @@ export default class extends PureComponent {
   filterUsers(value) {
     this.setState({
       searchText: value,
-    })
-    console.log('filter users')
-    this.updateLogs();
+    }, () => this.updateLogs())
+    
   }
 
   updateLogs() {
     console.log('update logs')
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    let url = `${HOST}/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`;
+    if (this.state.searchText !== '') {
+      url = url + `&userId=${this.state.searchText}`
+    }
+    fetch(url)
+    .then(response => response.json())
+    .then(response => {
+      const {totalPages} = response.data;
+      console.log(totalPages)
+      const {pageData} = response.data;
+      const tableData = pageData.map((item, index) => {
+        return {
+          logId: item.logId,
+          seq: index + 1,
+          date: item.logTime,
+          handleDetail: item.content,
+          user: item.usrByUsrId.usrName,
+        }
+      });
+      this.setState({
+        tableData,
+        totalPages,
+      })
+    })
   }
 
-  delete() {
-
+  deleteLog(logId) {
+    fetch(`${HOST}/deleteLog`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${window.sessionStorage.userId}&logId=${logId}`,
+    }).then(response => response.json())
+    .then(response => {
+      if (response.data.pageData.success == 'yes') {
+        message.success('删除日志成功');
+        window.location.reload();
+      } else {
+        message.error(response.data.pageData.message);
+      }
+    })
   }
 
-  export() {
-
+  exportLogs() {
+    const {tableData} = this.state;
+    if (tableData.length === 0) {
+      message.info('无法导出');
+      return;
+    }
+    let excelData = [];
+    for (let item of tableData) {
+      let obj = {
+        '序号': item.seq,
+        '日期': item.date,
+        '操作': item.handleDetail,
+        '用户': item.user,
+      }
+      excelData.push(obj);
+    }
+    let option = {};
+    option.fileName = '日志表格';
+    option.datas = [
+      {
+        sheetData: excelData,
+        sheetName: 'sheet',
+        sheetFilter: ['序号', '日期', '操作', '用户'],
+        sheetHeader: ['序号', '日期', '操作', '用户']
+      }
+    ];
+    let toExcel = new ExportJsonExcel(option);
+    toExcel.saveExcel();
   }
 
   render() {
@@ -60,43 +172,56 @@ export default class extends PureComponent {
       {
         title: '序号',
         dataIndex: 'seq',
+        key: 'seq'
       },
       {
         title: '日期',
         dataIndex: 'date',
+        key: 'date'
       },
       {
         title: '操作',
         dataIndex: 'handleDetail',
+        key: 'handleDetail'
       },
       {
         title: '用户',
         dataIndex: 'user',
+        key: 'user'
+      },
+      {
+        title: '',
+        dataIndex: 'delete',
+        key: 'delete',
+        render: (value, record) => (
+          <a onClick={() => this.deleteLog(record.logId)}>删除</a>
+        )
       }
     ];
     // 需获取
-    const data = [
-      {
-        seq: '1',
-        date: '2019-10-11',
-        handleDetail: '操作1',
-        user: '用户1',
-      },
-      {
-        seq: '2',
-        date: '2019-10-11',
-        handleDetail: '操作2',
-        user: '用户2',
-      },
-      {
-        seq: '3',
-        date: '2019-10-10',
-        handleDetail: '操作3',
-        user: '用户3',
-      }
-    ]
+    // const data = [
+    //   {
+    //     seq: '1',
+    //     date: '2019-10-11',
+    //     handleDetail: '操作1',
+    //     user: '用户1',
+    //   },
+    //   {
+    //     seq: '2',
+    //     date: '2019-10-11',
+    //     handleDetail: '操作2',
+    //     user: '用户2',
+    //   },
+    //   {
+    //     seq: '3',
+    //     date: '2019-10-10',
+    //     handleDetail: '操作3',
+    //     user: '用户3',
+    //   }
+    // ]
+    const data = this.state.tableData;
     return (
-      <div className="deletelog">
+      <div className="log">
         <div className="date">
           <div className="start-date">
             开始时间：
@@ -185,9 +310,18 @@ export default class extends PureComponent {
           dataSource={data}
           bordered
           className="log-table"
+          pagination={{
+            current: this.state.pageOffset,
+            total: this.state.totalPages*10,
+            pageSize: 10,
+            onChange: (page) => {
+              this.setState({
+                pageOffset: page,
+              }, () => this.updateLogs())
+            }
+          }}
         />
-        <Button type="primary" size="large" className="delete" onClick={(num) => this.delete()}>删除</Button>
-        <Button type="primary" size="large" className="export" onClick={(num) => this.export()}>导出</Button>
+        <Button type="primary" size="large" className="export" onClick={() => this.exportLogs()}>导出 excel</Button>
       </div>
     )
   }

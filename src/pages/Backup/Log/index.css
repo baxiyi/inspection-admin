@@ -1,4 +1,4 @@
-.deletelog {
+.log {
   margin-top: 50px;
   margin-left: 50px;
   width: 70%;
@@ -23,10 +23,7 @@
 .log-table {
   margin-top: 50px;
 }
-.delete {
-  margin-top: 50px;
-  margin-left: 50px;
-}
 .export {
-  margin-left: 50px;
+  position: relative;
+  left: -50px;
 }
