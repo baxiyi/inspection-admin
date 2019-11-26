@@ -1,0 +1,25 @@
+{
+  "error_code": 0,
+  "data": {
+    "pageData": [
+      {
+        "shelfId": 1,
+        "imgUrl": "https://......",
+        "time": "2019-10-20 10:00:00",
+        "ipAddress": "1.1.1.1"
+      },
+      {
+        "shelfId": 2,
+        "imgUrl": "https://......",
+        "time": "2019-10-23 10:00:00",
+        "ipAddress": "1.1.1.2"
+      },
+      {
+        "shelfId": 3,
+        "imgUrl": "https://......",
+        "time": "2019-11-01 10:00:00",
+        "ipAddress": "1.1.1.3"
+      }
+    ]
+  }
+}

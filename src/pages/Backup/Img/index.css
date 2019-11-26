@@ -1,4 +1,4 @@
-.deleteimg {
+.img {
   margin-top: 50px;
   margin-left: 50px;
   width: 70%;
@@ -16,17 +16,13 @@
   display: inline-block;
   margin-right: 30px;
 }
-.shelf-id-search {
+.user-search {
   margin-left: 30px;
   display: inline-block;
 }
-.log-table {
+.img-table {
   margin-top: 50px;
-}
-.delete {
-  margin-top: 50px;
-  margin-left: 50px;
 }
 .export {
-  margin-left: 50px;
+  margin-top: 10px;
 }

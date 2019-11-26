@@ -108,8 +108,8 @@ export default class extends PureComponent {
         dataIndex: 'devices',
         render: (arr, record) => {
           let res = '';
-          for (let dev in arr) {
-            res = res + dev + ',';
+          for (let dev of arr) {
+            res = res + dev.devId + ',';
           }
           const len = res.length;
           res = res.slice(0, len - 1);

@@ -23,8 +23,7 @@ export default class extends PureComponent {
   componentDidMount() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`${HOST}/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}
-    &endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
+    fetch(`${HOST}/getLogList.json?startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
     .then(response => response.json())
     .then(response => {
       const {totalPages} = response.data;
@@ -93,7 +92,7 @@ export default class extends PureComponent {
     console.log('update logs')
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    let url = `${HOST}/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`;
+    let url = `${HOST}/getLogList.json?startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`;
     if (this.state.searchText !== '') {
       url = url + `&userId=${this.state.searchText}`
     }
