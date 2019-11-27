@@ -1,0 +1,13 @@
+{
+  "error_code": 0,
+  "data": {
+    "pageData": {
+      "serverInfo": "服务器xxxx",
+      "runningTime": "已运行xxxx",
+      "status": "运行中",
+      "cpuInfo": "cpu占用率x%",
+      "diskInfo": "磁盘占用率x%",
+      "memoryInfo": "内存使用情况xxxx"
+    }
+  }
+}

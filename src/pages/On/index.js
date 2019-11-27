@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react'
-import {Table,Input,Divider, message} from 'antd'
+import {Table,Input, Modal, message} from 'antd'
 import './index.css'
 import { HOST } from '../../config';
 
@@ -10,12 +10,20 @@ export default class extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      searchType: '',
+      unitId: '',
+      shelfId: '',
+      category: '',
       tableData: [],
+      isShowWarningItems: false,
+      warningItemsData: [],
+      totalPages: 1,
+      pageOffset: 1,
     }
   }
 
-  searchByUnitId(unitId) {
-    fetch(`${HOST}/getUnitList.json?unitId=${unitId}`)
+  componentDidMount() {
+    fetch(`${HOST}/getUnitList.json?page=${this.state.pageOffset}&size=10`)
     .then(response => response.json())
     .then(response => {
       const {pageData} = response.data;
@@ -29,14 +37,34 @@ export default class extends PureComponent {
           isOn: item.isOn,
         }
       })
+      const {totalPages} = response.data;
       this.setState({
         tableData,
+        totalPages,
       })
     })
   }
 
-  searchByShelfId(shelfId) {
-    fetch(`${HOST}/getUnitList.json?shelfId=${shelfId}`)
+  updateUnitList() {
+    const {searchType} = this.state;
+    const {unitId} = this.state;
+    const {shelfId} = this.state;
+    const {category} = this.state;
+    let url = '';
+    switch(searchType) {
+      case 'unitId':
+        url = `${HOST}/getUnitList.json?page=${this.state.pageOffset}&size=10&unitId=${unitId}`;
+        break;
+      case 'shelfId':
+        url = `${HOST}/getUnitList.json?page=${this.state.pageOffset}&size=10&shelfId=${shelfId}`;
+        break;
+      case 'category':
+        url = `${HOST}/getUnitList.json?page=${this.state.pageOffset}&size=10&category=${category}`;
+        break;
+      default:
+        break;
+    }
+    fetch(url)
     .then(response => response.json())
     .then(response => {
       const {pageData} = response.data;
@@ -50,29 +78,10 @@ export default class extends PureComponent {
           isOn: item.isOn,
         }
       })
+      const {totalPages} = response.data;
       this.setState({
         tableData,
-      })
-    })
-  }
-
-  searchByCategory(category) {
-    fetch(`${HOST}/getUnitList.json?category=${category}`)
-    .then(response => response.json())
-    .then(response => {
-      const {pageData} = response.data;
-      const tableData = pageData.map((item, index) => {
-        return {
-          seq: index + 1,
-          unitId: item.unitId,
-          meaning: item.meaning,
-          category: item.category,
-          warningItems: item.warningItems,
-          isOn: item.isOn,
-        }
-      })
-      this.setState({
-        tableData,
+        totalPages,
       })
     })
   }
@@ -113,6 +122,19 @@ export default class extends PureComponent {
     }
   }
 
+  showWarningItems(warningItems) {
+    const warningItemsData = warningItems.map((item, index) => {
+      return {
+        seq: index + 1,
+        ...item,
+      }
+    });
+    this.setState({
+      isShowWarningItems: true,
+      warningItemsData,
+    })
+  }
+
   render() {
     const columns = [
       {
@@ -139,9 +161,9 @@ export default class extends PureComponent {
         title: '相关联的告警项',
         dataIndex: 'warningItems',
         key: 'warningItems',
-        render: (arr, record) => {
-          return arr.join(',');
-        }
+        render: (arr, record) => (
+          <a onClick={() => this.showWarningItems(arr)}>查看详情</a>
+        )
       },
       {
         title: '是否启用',
@@ -160,6 +182,29 @@ export default class extends PureComponent {
         ),      
       }
     ];
+    const warningItemsColumns = [
+      {
+        title: '序号',
+        dataIndex: 'seq',
+        key: 'seq',
+      },
+      {
+        title: '设备单元1',
+        dataIndex: 'unitId1',
+        key: 'unitId1',
+      },
+      {
+        title: '设备单元2',
+        dataIndex: 'unitId2',
+        key: 'unitId2'
+      },
+      {
+        title: '关系',
+        dataIndex: 'relation',
+        key: 'relation',
+      }
+    ];
+    const {warningItemsData} = this.state;
     const data = this.state.tableData;
     return (
       <div className="on">
@@ -168,28 +213,72 @@ export default class extends PureComponent {
           placeholder="设备单元id"
           enterButton="查询"
           size="Small"
-          onSearch={value => this.searchByUnitId(value)}
+          onSearch={value => this.setState({
+            searchType: 'unitId',
+            unitId: value,
+          }, () => this.updateUnitList())}
         />
         <Search
           className="shelf-query"
           placeholder="屏柜ID"
           enterButton="查询"
           size="Small"
-          onSearch={value => this.searchByShelfId(value)}
+          onSearch={value => this.setState({
+            searchType: 'shelfId',
+            shelfId: value,
+          }, () => this.updateUnitList())}
         />
         <Search
           className="category-query"
           placeholder="设备类型"
           enterButton="查询"
           size="Small"
-          onSearch={value => this.searchByCategory(value)}
+          onSearch={value => this.setState({
+            searchType: 'category',
+            category: value,
+          }, () => this.updateUnitList())}
         />
         <Table
           columns={columns}
           dataSource={data}
           bordered
           className="unit-table"
+          pagination={{
+            current: this.state.pageOffset,
+            total: this.state.totalPages*10,
+            pageSize: 10,
+            onChange: (page) => {
+              this.setState({
+                pageOffset: page,
+              }, () => this.updateUnitList())
+            }
+          }}
         ></Table>
+        <Modal 
+          visible={this.state.isShowWarningItems}
+          title="警告项详情"
+          okText="确认"
+          cancelText="取消"
+          onOk={() => {
+            this.setState({
+              isShowWarningItems: false,
+              warningItemsData: [],
+            })
+          }}
+          onCancel={() => {
+            this.setState({
+              isShowWarningItems: false,
+              warningItemsData: [],
+            })
+          }}
+        >
+          <Table
+            columns={warningItemsColumns}
+            dataSource={warningItemsData}
+            bordered
+            pagination={false}
+          ></Table>
+        </Modal>
       </div>
     );
   } 

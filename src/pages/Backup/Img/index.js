@@ -182,7 +182,10 @@ export default class extends PureComponent {
       {
         title: '图像地址',
         dataIndex: 'imgUrl',
-        key: 'imgUrl'
+        key: 'imgUrl',
+        render: (value) => (
+          <a href={value} target="_blank">查看图像</a>
+        )
       },
       {
         title: '拍摄日期',
@@ -192,7 +195,7 @@ export default class extends PureComponent {
       {
         title: '相机IP地址',
         dataIndex: 'ipAddress',
-        key: 'ipAddress'
+        key: 'ipAddress',
       },
       {
         title: '',
