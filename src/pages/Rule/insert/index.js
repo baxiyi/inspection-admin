@@ -120,7 +120,7 @@ export default class extends React.Component {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: `ruleId=${ruleId}&warningInfo=${warningInfor}&importance=${importance}&warningItems=${warningItems}&userId=${window.sessionStorage.userId}`
+      body: `ruleId=${ruleId}&warningInfo=${warningInfor}&importance=${importance}&warningItems=${JSON.stringify(warningItems)}&userId=${window.sessionStorage.userId}`
     }).then(response => response.json())
     .then(response => {
       if (response.data.pageData.success == 'yes') {
