@@ -14,8 +14,8 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
-      pageOffset: 0,
-      totalPages: 0,
+      pageOffset: 1,
+      totalPages: 1,
       tableData: [],
     }
   }

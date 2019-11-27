@@ -96,6 +96,8 @@ export default class extends PureComponent {
           columns={columns}
           dataSource={data}
           bordered
+          pagination={false}
+          className="system-table"
         ></Table>
         {
           systemData.status === '运行中'

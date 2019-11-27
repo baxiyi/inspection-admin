@@ -112,6 +112,7 @@ export default class extends PureComponent {
           columns={columns}
           dataSource={this.state.shelfInfo}
           bordered
+          pagination={false}
         />
       </div>
     )
