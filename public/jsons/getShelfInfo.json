@@ -6,7 +6,7 @@
         "shelfName": "屏柜1",
         "positionX": 1,
         "positionY": 2 ,
-        "ipAddress": "1.1.1.1",
+        "ipAddress": ["1.1.1.1", "2.2.2.2"],
         "status": "已启用"
       }
     }

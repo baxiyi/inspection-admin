@@ -83,6 +83,9 @@ export default class extends PureComponent {
       {
         title: '摄像头IP地址',
         dataIndex: 'ipAddress',
+        render: value => {
+          return value.join(' , ');
+        }
       },
       {
         title: '状态',
