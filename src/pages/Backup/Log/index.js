@@ -14,6 +14,8 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
+      searchType: '',
+      keyWords: '',
       pageOffset: 1,
       totalPages: 1,
       tableData: [],
@@ -84,8 +86,16 @@ export default class extends PureComponent {
   filterUsers(value) {
     this.setState({
       searchText: value,
+      searchType: 'userId',
     }, () => this.updateLogs())
     
+  }
+
+  searchKeyWords(value) {
+    this.setState({
+      keyWords: value,
+      searchType: 'keyWords',
+    }, () => this.updateLogs())
   }
 
   updateLogs() {
@@ -93,8 +103,11 @@ export default class extends PureComponent {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
     let url = `${HOST}/getLogList.json?startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`;
-    if (this.state.searchText !== '') {
-      url = url + `&userId=${this.state.searchText}`
+    if (this.state.searchText !== '' && this.state.searchType === 'userId') {
+      url = url + `&userId=${this.state.searchText}`;
+    }
+    if (this.state.keyWords !== '' && this.state.searchType === 'keyWords') {
+      url = url + `&keyWords=${this.state.keyWords}`;
     }
     fetch(url)
     .then(response => response.json())
@@ -302,6 +315,15 @@ export default class extends PureComponent {
             placeholder="请输入用户名"
             onSearch={(value) => this.filterUsers(value)}
             style={{width: 200}}
+          />
+        </div>
+        <div className="keywords-search">
+          关键字检索：
+          <Search 
+            placeholder="请输入搜索关键字"
+            onSearch={(value) => this.searchKeyWords(value)}
+            sytle={{width: 200}}
+            className="keywords-input"
           />
         </div>
         <Table 
