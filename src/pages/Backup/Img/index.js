@@ -1,11 +1,9 @@
 import React, {PureComponent} from 'react'
-import {Table, DatePicker, TimePicker, Button, message, Input} from 'antd'
+import {Table, DatePicker, TimePicker, Button, message, Popconfirm} from 'antd'
 import moment from 'moment';
 import {HOST} from '../../../config';
 import ExportJsonExcel from 'js-export-excel';
 import './index.css'
-
-const {Search} = Input;
 
 export default class extends PureComponent {
   constructor(props) {
@@ -13,9 +11,9 @@ export default class extends PureComponent {
     this.state = {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
-      searchText: '',
-      pageOffset: 1,
-      totalPages: 0,
+      // pageOffset: 1,
+      // totalPages: 0,
+      popVisble: false,
       tableData: [],
     }
   }
@@ -23,24 +21,14 @@ export default class extends PureComponent {
   componentDidMount() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`${HOST}/getImages.json?startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
+    fetch(`${HOST}/getImageInfo.json?startTime=${startTime}&endTime=${endTime}`)
     .then(response => response.json())
     .then(response => {
-      const {totalPages} = response.data;
-      console.log(totalPages)
+      // const {totalPages} = response.data;
       const {pageData} = response.data;
-      const tableData = pageData.map((item, index) => {
-        return {
-          seq: index + 1,
-          shelfId: item.shelfId,
-          imgUrl: item.imgUrl,
-          time: item.time,
-          ipAddress: item.ipAddress,
-        }
-      });
       this.setState({
-        tableData,
-        totalPages,
+        tableData: pageData,
+        // totalPages,
       })
     })
   }
@@ -52,7 +40,7 @@ export default class extends PureComponent {
         "h+": date.getHours(), //小时 
         "m+": date.getMinutes(), //分 
         "s+": date.getSeconds(), //秒 
-        "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度
         "S": date.getMilliseconds() //毫秒 
     };
     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
@@ -92,39 +80,43 @@ export default class extends PureComponent {
     console.log('update imgs')
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    let url = `${HOST}/getImages.json?startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`;
-    if (this.state.searchText !== '') {
-      url = url + `&shelfId=${this.state.searchText}`
-    }
+    let url = `${HOST}/getImageInfo.json?startTime=${startTime}&endTime=${endTime}`;
     fetch(url)
     .then(response => response.json())
     .then(response => {
-      const {totalPages} = response.data;
-      console.log(totalPages)
+      // const {totalPages} = response.data;
       const {pageData} = response.data;
-      const tableData = pageData.map((item, index) => {
-        return {
-          seq: index + 1,
-          shelfId: item.shelfId,
-          imgUrl: item.imgUrl,
-          time: item.time,
-          ipAddress: item.ipAddress,
-        }
-      });
       this.setState({
-        tableData,
-        totalPages,
+        tableData: pageData,
+        // totalPages,
       })
     })
   }
 
-  deleteImg(imgUrl) {
-    fetch(`${HOST}/deleteImg`, {
+  beforeDelete() {
+    const now = new Date();
+    const halfYearBefore = now.getTime() - 1000 * 60 * 60 * 24 * 30 * 6;
+    if (halfYearBefore <= this.state.endTime.getTime()) {
+      message.info('无法删除近半年数据');
+      this.setState({
+        popVisble: false,
+      });
+    } else {
+      this.setState({
+        popVisble: true,
+      })
+    }
+  }
+
+  deleteImgs() {
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    fetch(`${HOST}/deleteImgs.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: `userId=${window.sessionStorage.userId}&imgUrl=${imgUrl}`,
+      body: `userId=${window.sessionStorage.userId}&startTime=${startTime}&endTime=${endTime}`,
     }).then(response => response.json())
     .then(response => {
       if (response.data.pageData.success == 'yes') {
@@ -168,66 +160,59 @@ export default class extends PureComponent {
   }
 
   render() {
+    // const columns = [
+    //   {
+    //     title: '序号',
+    //     dataIndex: 'seq',
+    //     key: 'seq'
+    //   },
+    //   {
+    //     title: '屏柜ID',
+    //     dataIndex: 'shelfId',
+    //     key: 'shelfId'
+    //   },
+    //   {
+    //     title: '图像地址',
+    //     dataIndex: 'imgUrl',
+    //     key: 'imgUrl',
+    //     render: (value) => (
+    //       <a href={value} target="_blank">查看图像</a>
+    //     )
+    //   },
+    //   {
+    //     title: '拍摄日期',
+    //     dataIndex: 'time',
+    //     key: 'time'
+    //   },
+    //   {
+    //     title: '相机IP地址',
+    //     dataIndex: 'ipAddress',
+    //     key: 'ipAddress',
+    //   },
+    //   {
+    //     title: '',
+    //     dataIndex: 'delete',
+    //     key: 'delete',
+    //     render: (value, record) => (
+    //       <a onClick={() => this.deleteImg(record.imgUrl)}>删除</a>
+    //     )
+    //   }
+    // ];
     const columns = [
       {
-        title: '序号',
-        dataIndex: 'seq',
-        key: 'seq'
+        title: '图片数量',
+        dataIndex: 'imgNum',
+        key: 'imgNum',
       },
       {
-        title: '屏柜ID',
-        dataIndex: 'shelfId',
-        key: 'shelfId'
-      },
-      {
-        title: '图像地址',
-        dataIndex: 'imgUrl',
-        key: 'imgUrl',
-        render: (value) => (
-          <a href={value} target="_blank">查看图像</a>
-        )
-      },
-      {
-        title: '拍摄日期',
-        dataIndex: 'time',
-        key: 'time'
-      },
-      {
-        title: '相机IP地址',
-        dataIndex: 'ipAddress',
-        key: 'ipAddress',
-      },
-      {
-        title: '',
-        dataIndex: 'delete',
-        key: 'delete',
-        render: (value, record) => (
-          <a onClick={() => this.deleteImg(record.imgUrl)}>删除</a>
-        )
+        title: '磁盘占用',
+        dataIndex: 'diskInfo',
+        key: 'diskInfo',
       }
-    ];
-    // 需获取
-    // const data = [
-    //   {
-    //     seq: '1',
-    //     date: '2019-10-11',
-    //     handleDetail: '操作1',
-    //     user: '用户1',
-    //   },
-    //   {
-    //     seq: '2',
-    //     date: '2019-10-11',
-    //     handleDetail: '操作2',
-    //     user: '用户2',
-    //   },
-    //   {
-    //     seq: '3',
-    //     date: '2019-10-10',
-    //     handleDetail: '操作3',
-    //     user: '用户3',
-    //   }
-    // ]
-    const data = this.state.tableData;
+    ]
+    const data = [this.state.tableData];
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
     return (
       <div className="img">
         <div className="date">
@@ -305,31 +290,53 @@ export default class extends PureComponent {
           </div>
           <Button type="primary" onClick={() => this.changeDateRange()}>筛选</Button>
         </div>
-        <div className="user-search">
+        {/* <div className="user-search">
           屏柜筛选：
           <Search 
             placeholder="请输入屏柜ID"
             onSearch={(value) => this.filterShelf(value)}
             style={{width: 200}}
           />
-        </div>
+        </div> */}
         <Table 
           columns={columns}
           dataSource={data}
           bordered
           className="img-table"
-          pagination={{
-            current: this.state.pageOffset,
-            total: this.state.totalPages*10,
-            pageSize: 10,
-            onChange: (page) => {
-              this.setState({
-                pageOffset: page,
-              }, () => this.updateImgs())
-            }
-          }}
+          pagination={false}
+          // pagination={{
+          //   current: this.state.pageOffset,
+          //   total: this.state.totalPages*10,
+          //   pageSize: 10,
+          //   onChange: (page) => {
+          //     this.setState({
+          //       pageOffset: page,
+          //     }, () => this.updateImgs())
+          //   }
+          // }}
         />
-        <Button type="primary" size="large" className="export" onClick={() => this.exportImgs()}>导出 excel</Button>
+        {/* <Button type="primary" size="large" className="export" onClick={() => this.exportImgs()}>导出 excel</Button> */}
+        <Popconfirm
+          title={`确定要删除${startTime}到${endTime}这段时间的所有图片吗？`}
+          visible={this.state.popVisble}
+          onConfirm={() => {
+            this.setState({
+              popVisble: false,
+            });
+            this.deleteImgs();
+          }}
+          onCancel={() => {
+            this.setState({
+              popVisble: false,
+            })
+          }}
+          okText="是"
+          cancelText="否"
+          className="pop-confirm"
+          placement="bottomRight"
+        >
+          <Button type="primary" size="large" className="delete" onClick={() => this.beforeDelete()}>删除</Button>
+        </Popconfirm>
       </div>
     )
   }

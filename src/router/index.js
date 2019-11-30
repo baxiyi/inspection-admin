@@ -66,12 +66,12 @@ export default class extends PureComponent {
                 return isLogin ? <Backup2 /> : <Redirect to="/login"/>
               }}
             />
-            <Route 
+            {/* <Route 
               path='/on'
               render = {props => {
                 return isLogin ? <On /> : <Redirect to="/login"/>
               }}
-            />
+            /> */}
             <Route 
               path='/system'
               render = {props => {

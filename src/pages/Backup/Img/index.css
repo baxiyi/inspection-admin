@@ -22,7 +22,11 @@
 }
 .img-table {
   margin-top: 50px;
+  margin-bottom: 30px;
 }
 .export {
-  margin-top: 10px;
+  margin-right: 20px;
+}
+.ant-popover {
+  width: 400px !important;
 }
