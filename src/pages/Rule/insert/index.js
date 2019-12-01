@@ -14,6 +14,7 @@ export default class extends React.Component {
       warningInfor: '',
       importance: 1,
       editingSeq: '',
+      editingRelType: 2,
       editingData: {},
       tableData: [],
     }
@@ -23,6 +24,7 @@ export default class extends React.Component {
     this.setState({
       editingData: {},
       editingSeq: '',
+      editingRelType: 2,
     })
   }
 
@@ -35,6 +37,7 @@ export default class extends React.Component {
       tableData,
       editingSeq: '',
       editingData: {},
+      editingRelType: 2,
     })
   }
 
@@ -49,6 +52,7 @@ export default class extends React.Component {
       tableData,
       editingData: {},
       editingSeq: '',
+      editingRelType: 2,
     })
   }
 
@@ -59,12 +63,16 @@ export default class extends React.Component {
     this.setState({
       editingSeq: seq,
       editingData,
+      editingRelType: tableData[index].relationType,
     })
   }
 
   changeData(dataIndex, value) {
     let {editingData} = this.state;
     editingData[dataIndex] = value;
+    if (dataIndex == 'relationType' && value == 1) {
+      editingData['device2Id'] = '';
+    }
     this.setState({
       editingData
     })
@@ -75,19 +83,22 @@ export default class extends React.Component {
     const len = tableData.length;
     tableData.push({
       seq: len + 1,
+      relationType: 2,
       device1Id: '',
       device2Id: '',
-      relationType: '',
+      relation: '',
     });
     this.setState({
       tableData,
       editingSeq: tableData.length,
       editingData: {
         seq: tableData.length,
+        relationType: 2,
         device1Id: '',
         device2Id: '',
-        relationType: '',
-      }
+        relation: '',
+      },
+      editingRelType: 2,
     })
   }
 
@@ -98,9 +109,10 @@ export default class extends React.Component {
     const {tableData} = this.state;
     const warningItems = tableData.map(item => {
       return {
-        deviceId1: item.device1Id,
-        deviceId2: item.device2Id,
-        relation: item.relationType,
+        relationType: item.relationType,
+        deviceId1: parseInt(item.device1Id),
+        deviceId2: item.device2Id == '' ? -1 : parseInt(item.device2Id),
+        relation: item.relation,
       }
     });
     if (ruleId.trim().length === 0) {
@@ -140,6 +152,31 @@ export default class extends React.Component {
         key: 'seq',
       },
       {
+        title: '关系类型',
+        dataIndex: 'relationType',
+        key: 'relationType',
+        render: (value, record) => {
+          let res = null;
+          res = (record.seq == this.state.editingSeq)
+          ? (
+            <Select 
+              value={this.state.editingRelType}
+              onChange={(value) => {
+                this.changeData('relationType', value);
+                this.setState({
+                  editingRelType: value,
+                });
+              }}
+            >
+              <Option value={1}>一元关系</Option>
+              <Option value={2}>二元关系</Option>
+            </Select>
+          )
+          : <span>{value == 1 ? '一元关系' : '二元关系'}</span>
+          return res;
+        }
+      },
+      {
         title: '设备1的ID',
         dataIndex: 'device1Id',
         key: 'device1Id',
@@ -147,7 +184,7 @@ export default class extends React.Component {
         render: (value, record) => {
           let res = null;
           res = (record.seq == this.state.editingSeq)
-          ? <Input value={value} onChange={(e) => this.changeData('device1Id', e.target.value)}/>
+          ? <Input value={value} onChange={(e) => this.changeData('device1Id', e.target.value)} />
           : <span>{value}</span>
           return res;
         }
@@ -159,21 +196,22 @@ export default class extends React.Component {
         editable: true,
         render: (value, record) => {
           let res = null;
+          const isDisabled = this.state.editingRelType == 1;
           res = (record.seq == this.state.editingSeq)
-          ? <Input value={value} onChange={(e) => this.changeData('device2Id', e.target.value)}/>
+          ? <Input value={value} onChange={(e) => this.changeData('device2Id', e.target.value)} disabled={isDisabled} />
           : <span>{value}</span>
           return res;
         }
       },
       {
-        title: '关系类型',
-        dataIndex: 'relationType',
-        key: 'realationType',
+        title: '关系',
+        dataIndex: 'relation',
+        key: 'realation',
         editable: true,
         render: (value, record) => {
           let res = null;
           res = (record.seq == this.state.editingSeq)
-          ? <Input value={value} onChange={(e) => this.changeData('relationType', e.target.value)}/>
+          ? <Input value={value} onChange={(e) => this.changeData('relation', e.target.value)}/>
           : <span>{value}</span>
           return res;
         }
