@@ -10,7 +10,35 @@ export default class extends PureComponent {
     super(props);
     this.state = {
       tableData: [],
+      pageOffset: 1,
+      totalPages: 1,
     }
+  }
+
+  componentDidMount() {
+    fetch(`${HOST}/getAllRules.json?page=1&size=10`)
+    .then(response => response.json())
+    .then(response => {
+      const {pageData} = response.data;
+      const {totalPages} = response.data;
+      this.setState({
+        tableData: pageData,
+        totalPages
+      })
+    })
+  }
+
+  updateRules() {
+    fetch(`${HOST}/getAllRules.json?page=${this.state.pageOffset}&size=10`)
+    .then(response => response.json())
+    .then(response => {
+      const {pageData} = response.data;
+      const {totalPages} = response.data;
+      this.setState({
+        tableData: pageData,
+        totalPages
+      })
+    })
   }
 
   searchByRuleId(ruleId) {
@@ -156,7 +184,16 @@ export default class extends PureComponent {
           dataSource={tableData}
           bordered
           className="rule-table"
-          pagination={false}
+          pagination={{
+            current: this.state.pageOffset,
+            total: this.state.totalPages*10,
+            pageSize: 10,
+            onChange: (page) => {
+              this.setState({
+                pageOffset: page,
+              }, () => this.updateRules())
+            }
+          }}
         />
       </div>
     )

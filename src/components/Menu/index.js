@@ -48,7 +48,7 @@ class MenuComp extends PureComponent {
           </Menu.Item>
 
           <Menu.Item key='3'>
-          <Link to="/rule/stop">停用规则页</Link>
+          <Link to="/rule/stop">查看/停用规则页</Link>
           </Menu.Item>
 
         </SubMenu>
