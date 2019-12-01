@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react'
-import {Form, Input, Icon, Button, message} from 'antd'
+import {Form, Input, Icon, Button, message, Radio} from 'antd'
 import {withRouter} from 'react-router-dom'
 import {HOST} from '../../config';
 import './index.css'
@@ -11,9 +11,11 @@ class Login extends PureComponent {
       isLoginPage: true,
       loginUserId: '',
       loginPassword: '',
+      loginPrivilege: 2,
       registerUserId: '',
       registerUserName: '',
       registerPassword: '',
+      registerPrivilege: 2,
     }
   }
 
@@ -33,7 +35,7 @@ class Login extends PureComponent {
       // headers: {
       //   'Content-Type': 'application/x-www-form-urlencoded'
       // },
-      // body: `UsrId=${this.state.loginUserId}&UsrPassword=${this.state.loginPassword}&UsrPrivilege=3`
+      // body: `UsrId=${this.state.loginUserId}&UsrPassword=${this.state.loginPassword}&UsrPrivilege=${this.state.loginPrivilege}`
     })
     .then(response => response.json())
     .then(response => {
@@ -45,6 +47,7 @@ class Login extends PureComponent {
         storage.setItem('isLogin', "true");
         storage.setItem('userId', userId);
         storage.setItem('userName', userName);
+        storage.setItem('userPrivilege', this.state.loginPrivilege);
         this.props.history.push('/');
         window.location.reload();
       } else {
@@ -73,7 +76,7 @@ class Login extends PureComponent {
       // headers: {
       //   'Content-Type': 'application/x-www-form-urlencoded'
       // },
-      // body: `UsrId=${this.state.registerUserId}&UsrName=${this.state.registerUserName}&UsrPassword=${this.state.registerPassword}&UsrPrivilege=3`,
+      // body: `UsrId=${this.state.registerUserId}&UsrName=${this.state.registerUserName}&UsrPassword=${this.state.registerPassword}&UsrPrivilege=${this.state.registerPrivilege}`,
     })
     .then(response => response.json())
     .then(response => {
@@ -123,6 +126,19 @@ class Login extends PureComponent {
                     })
                   }}
                 />
+              </Form.Item>
+              <Form.Item>
+                <Radio.Group
+                  value={this.state.loginPrivilege}
+                  onChange={(e) => {
+                    this.setState({
+                      loginPrivilege: e.target.value,
+                    })
+                  }}
+                >
+                  <Radio value={2}>管理员</Radio>
+                  <Radio value={3}>超级管理员</Radio>
+                </Radio.Group>
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className="form-button" size="large">
@@ -181,6 +197,19 @@ class Login extends PureComponent {
                     })
                   }}
                 />
+              </Form.Item>
+              <Form.Item>
+                <Radio.Group
+                  value={this.state.registerPrivilege}
+                  onChange={(e) => {
+                    this.setState({
+                      registerPrivilege: e.target.value,
+                    })
+                  }}
+                >
+                  <Radio value={2}>管理员</Radio>
+                  <Radio value={3}>超级管理员</Radio>
+                </Radio.Group>
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className="form-button" size="large">

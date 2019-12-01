@@ -59,11 +59,11 @@ class MenuComp extends PureComponent {
           }>
 
           <Menu.Item key='4'>
-          <Link to="/backup/log">删除/导出系统日志</Link>
+          <Link to="/backup/log">系统日志</Link>
           </Menu.Item>
 
           <Menu.Item key='5'>
-          <Link to="/backup/img">删除采集图像</Link>
+          <Link to="/backup/img">采集图像</Link>
           </Menu.Item>
 
         </SubMenu>

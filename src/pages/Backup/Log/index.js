@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react'
-import {Table, DatePicker, TimePicker, Button, message, Input} from 'antd'
+import {Table, DatePicker, TimePicker, Button, message, Input, Popconfirm} from 'antd'
 import moment from 'moment';
 import {HOST} from '../../../config';
 import ExportJsonExcel from 'js-export-excel';
@@ -19,6 +19,7 @@ export default class extends PureComponent {
       pageOffset: 1,
       totalPages: 1,
       tableData: [],
+      popVisble: false,
     }
   }
 
@@ -179,6 +180,32 @@ export default class extends PureComponent {
     toExcel.saveExcel();
   }
 
+  beforeDelete() {
+    this.setState({
+      popVisble: true,
+    })
+  }
+
+  deleteLogs() {
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss');
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss');
+    fetch(`${HOST}/deleteLogs.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${window.sessionStorage.userId}&startTime=${startTime}&endTime=${endTime}`
+    }).then(response => response.json)
+    .then(response => {
+      if (response.data.pageData.success == 'yes') {
+        message.success('删除日志成功');
+        window.location.reload();
+      } else {
+        message.error(response.data.pageData.message);
+      }
+    })
+  }
+
   render() {
     const columns = [
       {
@@ -200,16 +227,18 @@ export default class extends PureComponent {
         title: '用户',
         dataIndex: 'user',
         key: 'user'
-      },
-      {
+      }
+    ];
+    if (window.sessionStorage.userPrivilege == 3) {
+      columns.push({
         title: '',
         dataIndex: 'delete',
         key: 'delete',
         render: (value, record) => (
           <a onClick={() => this.deleteLog(record.logId)}>删除</a>
         )
-      }
-    ];
+      })
+    }
     // 需获取
     // const data = [
     //   {
@@ -232,6 +261,8 @@ export default class extends PureComponent {
     //   }
     // ]
     const data = this.state.tableData;
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
     return (
       <div className="log">
         <div className="date">
@@ -343,6 +374,32 @@ export default class extends PureComponent {
           }}
         />
         <Button type="primary" size="large" className="export" onClick={() => this.exportLogs()}>导出 excel</Button>
+        {
+          window.sessionStorage.userPrivilege == 3
+          ? (
+            <Popconfirm
+              title={`确定要删除${startTime}到${endTime}这段时间的所有日志吗？`}
+              visible={this.state.popVisble}
+              onConfirm={() => {
+                this.setState({
+                  popVisble: false,
+                });
+                this.deleteLogs();
+              }}
+              onCancel={() => {
+                this.setState({
+                  popVisble: false,
+                })
+              }}
+              okText="是"
+              cancelText="否"
+              className="pop-confirm"
+              placement="bottomRight"
+            >
+              <Button type="primary" size="large" className="delete" onClick={() => this.beforeDelete()}>批量删除</Button>
+            </Popconfirm>
+          ) : null
+        }
       </div>
     )
   }
