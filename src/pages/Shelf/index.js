@@ -14,10 +14,14 @@ export default class extends PureComponent {
   }
 
   getShelfInfo(shelfId) {
-    fetch(`${HOST}/getShelfInfo.json?&shelfId=${shelfId}`, {
+    fetch(`${HOST}/getShelfInfo.json?shelfId=${shelfId}`, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
+      if (response.code !== 0) {
+        message.error('屏柜ID不存在');
+        return;
+      }
       const {pageData} = response.data;
       let shelfInfoObj = pageData;
       shelfInfoObj.position = `(${pageData.positionX}, ${pageData.positionY})`;
@@ -31,8 +35,8 @@ export default class extends PureComponent {
 
   startOrStopShelf(status) {
     const {shelfInfo} = this.state;
-    if (status == '已启用') {
-      fetch(`${HOST}/startOrStopShelf.json`, {
+    if (status == 1) {
+      fetch(`${HOST}/StartOrStopShelf.json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -40,15 +44,17 @@ export default class extends PureComponent {
         body: `shelfId=${shelfInfo[0].shelfId}&type=0&userId=${window.sessionStorage.userId}`,
       }).then(response => response.json())
       .then(response => {
-        if (response.data.success == 'yes') {
-          message.success('停用成功');
-          window.locaction.reload();
+        if (response.code == 0) {
+          message.success('停用成功', 1)
+          .then(() => {
+            window.location.reload();
+          })
         } else {
-          message.error(response.data.message);
+          message.error(response.message);
         }
       })
     } else {
-      fetch(`${HOST}/startOrStopShelf.json`, {
+      fetch(`${HOST}/StartOrStopShelf.json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -56,11 +62,13 @@ export default class extends PureComponent {
         body: `shelfId=${shelfInfo[0].shelfId}&type=1&userId=${window.sessionStorage.userId}`,
       }).then(response => response.json())
       .then(response => {
-        if (response.data.pageData.success == 'yes') {
-          message.success('启用成功');
-          window.locaction.reload();
+        if (response.code == 0) {
+          message.success('启用成功', 1)
+          .then(() => {
+            window.location.reload();
+          });
         } else {
-          message.error(response.data.message);
+          message.error(response.message);
         }
       })
     }
@@ -90,13 +98,16 @@ export default class extends PureComponent {
       {
         title: '状态',
         dataIndex: 'status',
+        render: (value) => {
+          return value == 0 ? '停用' : '启用';
+        }
       },
       {
         title: '',
         dataIndex: 'startOrStop',
         render: (value, record) => (
           <a onClick={() => this.startOrStopShelf(record.status)}>
-            {record.status == '已启用' ? '停用' : '启用'}
+            {record.status == 0 ? '启用' : '停用'}
           </a>
         )
       }

@@ -119,11 +119,12 @@ export default class extends PureComponent {
       body: `userId=${window.sessionStorage.userId}&startTime=${startTime}&endTime=${endTime}`,
     }).then(response => response.json())
     .then(response => {
-      if (response.data.pageData.success == 'yes') {
-        message.success('删除图像成功');
-        window.location.reload();
+      if (response.code == 0) {
+        message.success('删除图像成功', 1)
+        .then(() => window.location.reload())
+        
       } else {
-        message.error(response.data.pageData.message);
+        message.error(response.message);
       }
     })
   }

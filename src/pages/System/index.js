@@ -32,23 +32,25 @@ export default class extends PureComponent {
       body: `type=${type}`,
     }).then(response => response.json())
     .then(response => {
-      if (response.data.pageData.success == 'yes') {
+      if (response.code == 0) {
         switch(type) {
           case 0:
-            message.success('关闭系统成功');
+            message.success('关闭系统成功', 1)
+            .then(() => window.location.reload())
             break;
           case 1:
-            message.success('启动系统成功');
+            message.success('启动系统成功', 1)
+            .then(() => window.location.reload())
             break;
           case 2:
-            message.success('重启系统成功');
+            message.success('重启系统成功', 1)
+            .then(() => window.location.reload())
             break;
           default:
             break;
         }
-        window.location.reload();
       } else {
-        message.error(response.data.pageData.message);
+        message.error(response.message);
       }
     })
   }

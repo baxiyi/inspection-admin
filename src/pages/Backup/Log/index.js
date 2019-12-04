@@ -36,7 +36,7 @@ export default class extends PureComponent {
         return {
           logId: item.logId,
           seq: index + 1,
-          date: item.logTime,
+          date: this.formatDate(new Date(item.logTime), 'yyyy-MM-dd hh:mm:ss'),
           handleDetail: item.content,
           user: item.usrByUsrId.usrName,
         }
@@ -103,6 +103,7 @@ export default class extends PureComponent {
     console.log('update logs')
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    console.log(endTime);
     let url = `${HOST}/getLogList.json?startTime=${startTime}&endTime=${endTime}&page=${this.state.pageOffset}&size=10`;
     if (this.state.searchText !== '' && this.state.searchType === 'userId') {
       url = url + `&userId=${this.state.searchText}`;
@@ -113,6 +114,10 @@ export default class extends PureComponent {
     fetch(url)
     .then(response => response.json())
     .then(response => {
+      if (response.code != 0) {
+        message.error(response.message);
+        return;
+      }
       const {totalPages} = response.data;
       console.log(totalPages)
       const {pageData} = response.data;
@@ -120,7 +125,7 @@ export default class extends PureComponent {
         return {
           logId: item.logId,
           seq: index + 1,
-          date: item.logTime,
+          date: this.formatDate(new Date(item.logTime), 'yyyy-MM-dd hh:mm:ss'),
           handleDetail: item.content,
           user: item.usrByUsrId.usrName,
         }
@@ -141,11 +146,11 @@ export default class extends PureComponent {
       body: `userId=${window.sessionStorage.userId}&logId=${logId}`,
     }).then(response => response.json())
     .then(response => {
-      if (response.data.pageData.success == 'yes') {
-        message.success('删除日志成功');
-        window.location.reload();
+      if (response.code == 0) {
+        message.success('删除日志成功', 1)
+        .then(() => window.location.reload())
       } else {
-        message.error(response.data.pageData.message);
+        message.error(response.message);
       }
     })
   }
@@ -197,9 +202,9 @@ export default class extends PureComponent {
       body: `userId=${window.sessionStorage.userId}&startTime=${startTime}&endTime=${endTime}`
     }).then(response => response.json)
     .then(response => {
-      if (response.data.pageData.success == 'yes') {
-        message.success('删除日志成功');
-        window.location.reload();
+      if (response.code == 0) {
+        message.success('删除日志成功', 1)
+        .then(() => window.location.reload())
       } else {
         message.error(response.data.pageData.message);
       }
@@ -343,7 +348,7 @@ export default class extends PureComponent {
         <div className="user-search">
           用户筛选：
           <Search 
-            placeholder="请输入用户名"
+            placeholder="请输入用户ID"
             onSearch={(value) => this.filterUsers(value)}
             style={{width: 200}}
           />

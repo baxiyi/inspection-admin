@@ -135,11 +135,13 @@ export default class extends React.Component {
       body: `ruleId=${ruleId}&warningInfo=${warningInfor}&importance=${importance}&warningItems=${JSON.stringify(warningItems)}&userId=${window.sessionStorage.userId}`
     }).then(response => response.json())
     .then(response => {
-      if (response.data.pageData.success == 'yes') {
-        message.success('录入规则成功');
-        window.location.reload();
+      if (response.code == 0) {
+        message.success('录入规则成功', 1)
+        .then(() => {
+          window.location.reload();
+        })
       } else {
-        message.error(response.data.pageData.message);
+        message.error(response.message);
       }
     })
   }

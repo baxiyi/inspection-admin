@@ -31,11 +31,11 @@ class Login extends PureComponent {
       return;
     }
     fetch(`${HOST}/getLogIn.json`, {
-      method: 'GET',
-      // headers: {
-      //   'Content-Type': 'application/x-www-form-urlencoded'
-      // },
-      // body: `UsrId=${this.state.loginUserId}&UsrPassword=${this.state.loginPassword}&UsrPrivilege=${this.state.loginPrivilege}`
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `UsrId=${this.state.loginUserId}&UsrPassword=${this.state.loginPassword}&UsrPrivilege=${this.state.loginPrivilege}`
     })
     .then(response => response.json())
     .then(response => {
@@ -72,11 +72,11 @@ class Login extends PureComponent {
       return;
     }
     fetch(`${HOST}/getRegister.json`, {
-      method: 'GET',
-      // headers: {
-      //   'Content-Type': 'application/x-www-form-urlencoded'
-      // },
-      // body: `UsrId=${this.state.registerUserId}&UsrName=${this.state.registerUserName}&UsrPassword=${this.state.registerPassword}&UsrPrivilege=${this.state.registerPrivilege}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `UsrId=${this.state.registerUserId}&UsrName=${this.state.registerUserName}&UsrPassword=${this.state.registerPassword}&UsrPrivilege=${this.state.registerPrivilege}`,
     })
     .then(response => response.json())
     .then(response => {

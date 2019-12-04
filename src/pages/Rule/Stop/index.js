@@ -19,10 +19,16 @@ export default class extends PureComponent {
     fetch(`${HOST}/getAllRules.json?page=1&size=10`)
     .then(response => response.json())
     .then(response => {
-      const {pageData} = response.data;
+      const {rules} = response.data.pageData;
       const {totalPages} = response.data;
+      const tableData = rules.map(rule => {
+        return {
+          ...rule,
+          ruleId: rule.ruleid,
+        }
+      })
       this.setState({
-        tableData: pageData,
+        tableData: tableData,
         totalPages
       })
     })
@@ -32,10 +38,16 @@ export default class extends PureComponent {
     fetch(`${HOST}/getAllRules.json?page=${this.state.pageOffset}&size=10`)
     .then(response => response.json())
     .then(response => {
-      const {pageData} = response.data;
+      const {rules} = response.data.pageData;
       const {totalPages} = response.data;
+      const tableData = rules.map(rule => {
+        return {
+          ...rule,
+          ruleId: rule.ruleid,
+        }
+      })
       this.setState({
-        tableData: pageData,
+        tableData: tableData,
         totalPages
       })
     })
@@ -46,11 +58,21 @@ export default class extends PureComponent {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
-      const {pageData} = response.data;
-      let tableData = [];
-      tableData.push(pageData);
+      if (response.code != 0) {
+        message.error(response.message);
+        return;
+      }
+      const {rules} = response.data.pageData;
+      const {totalPages} = response.data;
+      const tableData = rules.map(rule => {
+        return {
+          ...rule,
+          ruleId: rule.ruleid,
+        }
+      })
       this.setState({
-        tableData,
+        tableData: tableData,
+        totalPages
       })
     })
   }
@@ -60,16 +82,24 @@ export default class extends PureComponent {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
-      const {pageData} = response.data;
+      const {rules} = response.data.pageData;
+      const {totalPages} = response.data;
+      const tableData = rules.map(rule => {
+        return {
+          ...rule,
+          ruleId: rule.ruleid,
+        }
+      })
       this.setState({
-        tableData: pageData,
+        tableData: tableData,
+        totalPages
       })
     })
   }
 
   startOrStopRule(status, ruleId) {
-    if (status == '已启用') {
-      fetch(`${HOST}/startOrStopRule.json`, {
+    if (status > 0) {
+      fetch(`${HOST}/StartOrStopRule.json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -77,15 +107,15 @@ export default class extends PureComponent {
         body: `ruleId=${ruleId}&type=0&userId=${window.sessionStorage.userId}`
       }).then(response => response.json())
       .then(response => {
-        if (response.data.pageData.success == 'yes') {
-          message.success('停用规则成功');
-          window.location.reload()
+        if (response.code == 0) {
+          message.success('停用规则成功', 1)
+          .then(() => window.location.reload())
         } else {
-          message.error(response.data.pageData.message);
+          message.error(response.message);
         }
       })
     } else {
-      fetch(`${HOST}/startOrStopRule`, {
+      fetch(`${HOST}/StartOrStopRule`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -93,11 +123,11 @@ export default class extends PureComponent {
         body: `ruleId=${ruleId}&type=1&userId=${window.sessionStorage.userId}`
       }).then(response => response.json())
       .then(response => {
-        if (response.data.pageData.success == 'yes') {
-          message.success('启用规则成功');
-          window.location.reload()
+        if (response.code == 0) {
+          message.success('启用规则成功', 1)
+          .then(() => window.location.reload())
         } else {
-          message.error(response.data.pageData.message);
+          message.error(response.message);
         }
       })
     }
@@ -112,11 +142,11 @@ export default class extends PureComponent {
       body: `ruleId=${ruleId}&userId=${window.sessionStorage.userId}`
     }).then(response => response.json())
     .then(response => {
-      if (response.data.pageData.success == 'yes') {
-        message.success('删除规则成功');
-        window.location.reload()
+      if (response.code == 0) {
+        message.success('删除规则成功', 1)
+        .then(() => window.location.reload());
       } else {
-        message.error(response.data.pageData.message);
+        message.error(response.message);
       }
     })
   }
@@ -147,13 +177,16 @@ export default class extends PureComponent {
       {
         title: '状态',
         dataIndex: 'status',
+        render: (value) => {
+          return value > 0 ? '启用' : '停用'
+        }
       },
       {
         title: '',
         dataIndex: 'onOrStop',
         render: (value, record) => (
           <a onClick={() => this.startOrStopRule(record.status, record.ruleId)}>
-            {record.status == '已启用' ? '停用' : '启用'}
+            {record.status > 0 ? '停用' : '启用'}
           </a>
         )
       },
