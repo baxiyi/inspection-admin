@@ -194,19 +194,20 @@ export default class extends PureComponent {
   deleteLogs() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss');
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss');
-    fetch(`${HOST}/deleteLogs.json`, {
+    fetch(`${HOST}/DeleteLogs.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: `userId=${window.sessionStorage.userId}&startTime=${startTime}&endTime=${endTime}`
-    }).then(response => response.json)
+    }).then(response => response.json())
     .then(response => {
+      console.log(response)
       if (response.code == 0) {
         message.success('删除日志成功', 1)
         .then(() => window.location.reload())
       } else {
-        message.error(response.data.pageData.message);
+        message.error(response.message);
       }
     })
   }
@@ -234,16 +235,16 @@ export default class extends PureComponent {
         key: 'user'
       }
     ];
-    if (window.sessionStorage.userPrivilege == 3) {
-      columns.push({
-        title: '',
-        dataIndex: 'delete',
-        key: 'delete',
-        render: (value, record) => (
-          <a onClick={() => this.deleteLog(record.logId)}>删除</a>
-        )
-      })
-    }
+    // if (window.sessionStorage.userPrivilege == 3) {
+    //   columns.push({
+    //     title: '',
+    //     dataIndex: 'delete',
+    //     key: 'delete',
+    //     render: (value, record) => (
+    //       <a onClick={() => this.deleteLog(record.logId)}>删除</a>
+    //     )
+    //   })
+    // }
     // 需获取
     // const data = [
     //   {

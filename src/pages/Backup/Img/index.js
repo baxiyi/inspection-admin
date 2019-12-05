@@ -111,7 +111,7 @@ export default class extends PureComponent {
   deleteImgs() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`${HOST}/deleteImgs.json`, {
+    fetch(`${HOST}/DeleteImgs.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
